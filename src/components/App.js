@@ -7,7 +7,7 @@ import { Card, CardHeader, CardMedia } from 'material-ui/Card';
 import Login from './Login.js'
 import View from './View.js'
 
-import helpers from './helpers.js'
+import helpers from '../util/helpers.js'
 
 injectTapEventPlugin()
 
@@ -50,13 +50,13 @@ class App extends Component {
               title="FLUX"
               subtitle="SEED PROJECT"
               style={{display: "flex", justifyContent: "space-between"}}
-              children={(
+              children={
                 <Login
                   isLoggedIn={this.state.isLoggedIn}
                   loginRedirect={helpers.redirectToFluxLogin.bind(helpers)}
                   logOut={this.logOut}
                 />
-              )}
+              }
             />
             <CardMedia
               style={{height: "70%", padding: "10px"}}
