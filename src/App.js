@@ -13,21 +13,24 @@ class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      isLoggedIn: false,
+      isLoggedIn: null,
     }
   }
 
-  componentWillMount = () => {
+  componentDidMount = () => {
     var self = this
     // Check if we're coming back from Flux with the login credentials.
     helpers.storeFluxUser()
     // check that the user is logged in, otherwise show the login page
       .then(function() { return helpers.isLoggedIn() })
       .then(function(isLoggedIn) {
-        if(isLoggedIn) {
-          self.setState({isLoggedIn: true})
-        }
+        self.setState({isLoggedIn})
       })
+  }
+
+  logOut = () => {
+    helpers.logout()
+    this.setState({isLoggedIn: false})
   }
 
   render() {
@@ -36,7 +39,8 @@ class App extends Component {
         <div className="App" style={{display: 'flex', justifycontent:'center'}}>
           <Login 
             isLoggedIn={this.state.isLoggedIn}
-            redirect={helpers.redirectToFluxLogin.bind(helpers)}
+            loginRedirect={helpers.redirectToFluxLogin.bind(helpers)}
+            logOut={this.logOut}
           />
         </div>
       </MuiThemeProvider>
