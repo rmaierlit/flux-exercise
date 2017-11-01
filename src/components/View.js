@@ -11,7 +11,7 @@ class View extends Component{
 
     componentDidUpdate = () => {
         if (this.props.isLoggedIn) {
-            this.getViewport()
+            this.renderViewport()
         }
     }
 
@@ -29,13 +29,25 @@ class View extends Component{
         }
     }
 
+    renderViewport() {
+        let viewport = this.getViewport()
+        if (!this.props.data){
+            viewport.setGeometryEntity(null)
+        } else if (true || FluxViewport.isKnownGeom(this.props.data.value)) {
+            //add it to the viewport
+            viewport.setGeometryJson( JSON.stringify(this.props.data.value) )
+        } else (
+            console.error('Data does not represent a known geometric object')
+        )
+    }
+
     render() {
         return (
             <div 
                 ref={(view) => {this.view = view}}
                 style={{
                     height: "100%",
-                    visibility: this.props.isLoggedIn? "visible" : "hidden",
+                    visibility: this.props.isLoggedIn? "visible" : "visible",
                 }}
             >
             </div>

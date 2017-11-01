@@ -20,10 +20,11 @@ class App extends Component {
       isLoggedIn: null,
       user: null,
       projects: [],
-      selectedProject: -1,
+      selectedProject: 0,
       projectCells: [],
-      selectedOutputCell: -1,
+      selectedOutputCell: 0,
       dataTables: {},
+      data: null,
   }
 
   componentDidMount = () => {
@@ -70,6 +71,14 @@ class App extends Component {
     return this.getDataTable(project).table.listCells()
   }
 
+  getCell = (project, cell_id) => {
+    return this.getDataTable(project).table.getCell(cell_id)
+  }
+
+  getValue = (project, cell_id) => {
+    return this.getCell(project, cell_id).fetch()
+  }
+
   fetchProjects = () => {
     let self = this;
     // get the user's projects from flux (returns a promise)
@@ -85,23 +94,32 @@ class App extends Component {
     // get the project's cells (keys) from flux (returns a promise)
     this.getCells(project)
       .then(function(data) {
-        console.log('data: ', data.entities)
         let projectCells = data.entities
-        self.setState({projectCells})
+        self.setState({projectCells, data: null})
       })
   }
 
-  handleProjectChange = (event, index, value) => {
-    this.setState({selectedProject: value})
+  handleProjectChange = (event, index, project_id) => {
+    this.setState({selectedProject: project_id})
 
-    if(value != -1) {
-      let project = this.state.projects.filter( (p) => p.id === value )[0]
+    if(project_id) {
+      let project = this.state.projects.filter( (p) => p.id === project_id )[0]
       this.fetchCells(project)
     }
   }
 
-  handleCellChange = (event, index, value) => {
-    this.setState({selectedOutputCell: value})
+  handleCellChange = (event, index, cell_id) => {
+    this.setState({selectedOutputCell: cell_id})
+
+    let project_id = this.state.selectedProject
+    if(project_id && cell_id){
+      let project = this.state.projects.filter( (p) => p.id === project_id )[0]
+      this.getValue(project, cell_id)
+        .then((data) => {
+          this.setState({data})
+        })
+    }
+
   }
 
   logOut = () => {
@@ -146,11 +164,14 @@ class App extends Component {
               style={{height: "60%", padding: "10px"}}
               mediaStyle={{height: "100%"}}
             >
-              <View isLoggedIn={this.state.isLoggedIn}/>
+              <View
+                isLoggedIn={this.state.isLoggedIn}
+                data={this.state.data}
+              />
             </CardMedia>
             <ControlledSelector
               default="Select a Cell"
-              visible={this.state.isLoggedIn}
+              visible={this.state.isLoggedIn && this.state.projectCells.length}
               handleChange={this.handleCellChange}
               options={this.state.projectCells}
               convert={optionConverters.cellToItem}
