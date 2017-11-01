@@ -4,12 +4,29 @@ import box_data from '../util/box.js'
 const FluxViewport = window.FluxViewport
 
 class View extends Component{
-    componentDidMount = (prevProps) => {
-        const viewport = new FluxViewport(this.view)
-        viewport.setupDefaultLighting()
-        viewport.setClearColor(0xffffff)
+    constructor(props) {
+        super(props)
+        this.state = { viewport: null }
+    }
 
-        viewport.setGeometryEntity(box_data)
+    componentDidUpdate = () => {
+        if (this.props.isLoggedIn) {
+            this.getViewport()
+        }
+    }
+
+    getViewport = () => {
+        if (!this.state.viewport) {
+            const viewport = new FluxViewport(this.view)
+            viewport.setupDefaultLighting()
+            viewport.setClearColor(0xffffff)
+            viewport.setGeometryEntity(box_data)
+            this.setState({viewport})
+
+            return viewport
+        } else {
+            return this.state.viewport
+        }
     }
 
     render() {
