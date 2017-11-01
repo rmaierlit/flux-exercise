@@ -6,17 +6,19 @@ import { Card, CardHeader, CardMedia } from 'material-ui/Card';
 
 import Login from './Login.js'
 import View from './View.js'
+import ProjectSelector from './ProjectSelector'
 
 import helpers from '../util/helpers.js'
+
+const redirectToFluxLogin = helpers.redirectToFluxLogin.bind(helpers)
 
 injectTapEventPlugin()
 
 class App extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
+  state = {
       isLoggedIn: null,
-    }
+      user: null,
+      options: [],
   }
 
   componentDidMount = () => {
@@ -27,6 +29,37 @@ class App extends Component {
       .then(function() { return helpers.isLoggedIn() })
       .then(function(isLoggedIn) {
         self.setState({isLoggedIn})
+        if (isLoggedIn) {
+          self.fetchProjects()
+        }
+      })
+  }
+
+  getUser = () => {
+    if (!this.state.user) {
+      let user = helpers.getUser()
+      this.setState({user})
+      return user
+    }
+    return this.state.user
+  }
+
+  getProjects = () => {
+    return this.getUser().listProjects()
+  }
+
+  fetchProjects = () => {
+    let self = this;
+    // get the user's projects from flux (returns a promise)
+    this.getProjects()
+      .then(function(data) {
+        let projects = data.entities
+        // for each project, create an option for the select box with
+        // the project.id as the value and the project.name as the label
+        let options = projects.map(function(project) {
+          return { value:project.id, text:project.name }
+        })
+        self.setState({options})
       })
   }
 
@@ -50,13 +83,15 @@ class App extends Component {
               title="FLUX"
               subtitle="SEED PROJECT"
               style={{display: "flex", justifyContent: "space-between"}}
-              children={
-                <Login
+              children={[
+                (<ProjectSelector options={this.state.options} key={0} />),
+                (<Login
                   isLoggedIn={this.state.isLoggedIn}
-                  loginRedirect={helpers.redirectToFluxLogin.bind(helpers)}
+                  loginRedirect={redirectToFluxLogin}
                   logOut={this.logOut}
-                />
-              }
+                  key={1}
+                />),
+              ]}
             />
             <CardMedia
               style={{height: "70%", padding: "10px"}}
