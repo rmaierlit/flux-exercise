@@ -6,9 +6,10 @@ import { Card, CardHeader, CardMedia } from 'material-ui/Card';
 
 import Login from './Login.js'
 import View from './View.js'
-import ProjectSelector from './ProjectSelector'
+import ControlledSelector from './ControlledSelector'
 
 import helpers from '../util/helpers.js'
+import optionConverters from '../util/optionConverters.js'
 
 const redirectToFluxLogin = helpers.redirectToFluxLogin.bind(helpers)
 
@@ -18,7 +19,11 @@ class App extends Component {
   state = {
       isLoggedIn: null,
       user: null,
-      options: [],
+      projects: [],
+      selectedProject: -1,
+      projectCells: [],
+      selectedOutputCell: -1,
+      dataTables: {},
   }
 
   componentDidMount = () => {
@@ -48,19 +53,55 @@ class App extends Component {
     return this.getUser().listProjects()
   }
 
+  getDataTable = (project) => {
+    if ( !(project.id in this.state.dataTables) ) {
+      let dt = this.getUser().getDataTable(project.id)
+      let dataTables = {...this.state.dataTables}
+      dataTables[project.id] = { table: dt, handlers: {}, websocketOpen: false }
+
+      this.setState({dataTables})
+      return dataTables[project.id]
+    } else {
+      return this.state.dataTables[project.id]
+    }
+  }
+
+  getCells = (project) => {
+    return this.getDataTable(project).table.listCells()
+  }
+
   fetchProjects = () => {
     let self = this;
     // get the user's projects from flux (returns a promise)
     this.getProjects()
       .then(function(data) {
         let projects = data.entities
-        // for each project, create an option for the select box with
-        // the project.id as the value and the project.name as the label
-        let options = projects.map(function(project) {
-          return { value:project.id, text:project.name }
-        })
-        self.setState({options})
+        self.setState({projects})
       })
+  }
+
+  fetchCells = (project) => {
+    let self = this;
+    // get the project's cells (keys) from flux (returns a promise)
+    this.getCells(project)
+      .then(function(data) {
+        console.log('data: ', data.entities)
+        let projectCells = data.entities
+        self.setState({projectCells})
+      })
+  }
+
+  handleProjectChange = (event, index, value) => {
+    this.setState({selectedProject: value})
+
+    if(value != -1) {
+      let project = this.state.projects.filter( (p) => p.id === value )[0]
+      this.fetchCells(project)
+    }
+  }
+
+  handleCellChange = (event, index, value) => {
+    this.setState({selectedOutputCell: value})
   }
 
   logOut = () => {
@@ -84,7 +125,15 @@ class App extends Component {
               subtitle="SEED PROJECT"
               style={{display: "flex", justifyContent: "space-between"}}
               children={[
-                (<ProjectSelector options={this.state.options} key={0} />),
+                (<ControlledSelector
+                  default="Select a Project"
+                  visible={this.state.isLoggedIn}
+                  handleChange={this.handleProjectChange}
+                  options={this.state.projects}
+                  convert={optionConverters.projectToItem}
+                  value={this.state.selectedProject}
+                  key={0}
+                />),
                 (<Login
                   isLoggedIn={this.state.isLoggedIn}
                   loginRedirect={redirectToFluxLogin}
@@ -94,11 +143,19 @@ class App extends Component {
               ]}
             />
             <CardMedia
-              style={{height: "70%", padding: "10px"}}
+              style={{height: "60%", padding: "10px"}}
               mediaStyle={{height: "100%"}}
             >
               <View isLoggedIn={this.state.isLoggedIn}/>
             </CardMedia>
+            <ControlledSelector
+              default="Select a Cell"
+              visible={this.state.isLoggedIn}
+              handleChange={this.handleCellChange}
+              options={this.state.projectCells}
+              convert={optionConverters.cellToItem}
+              value={this.state.selectedOutputCell}
+            />
           </Card>
         </div>
       </MuiThemeProvider>

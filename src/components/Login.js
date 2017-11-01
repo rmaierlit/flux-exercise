@@ -7,13 +7,13 @@ class Login extends Component {
     render() {
         if (this.props.isLoggedIn === null){
             //null means that login status is not known yet
-            return null
+            return (
+                <Button style={{visibility: 'hidden'}} label="Log Out"/>
+            )
         }
         else if (this.props.isLoggedIn){
             return (
-                <div>
-                    <Button label="Log Out" onClick={this.props.logOut}/>
-                </div>
+                <Button label="Log Out" onClick={this.props.logOut}/>
             )
         } else {
             return (
