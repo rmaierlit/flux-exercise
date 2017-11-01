@@ -1,5 +1,3 @@
-import MenuItem from "material-ui/MenuItem"
-
 let converters = {}
 
 converters.projectToItem= function(project) {
