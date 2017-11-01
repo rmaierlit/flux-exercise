@@ -26,6 +26,7 @@ class ControlledSelector extends Component {
                 <SelectField
                     value={this.props.value}
                     onChange={this.props.handleChange}
+                    style={{marginRight: "10px"}}
                 >
                     {items}
                 </SelectField>

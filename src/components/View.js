@@ -3,6 +3,11 @@ import box_data from '../util/box.js'
 
 const FluxViewport = window.FluxViewport
 
+function houseMapper(entity){
+    //if(!entity.geometryParameters.geometry)
+    return entity.geometryParameters.geometry
+}
+
 class View extends Component{
     constructor(props) {
         super(props)
@@ -33,9 +38,12 @@ class View extends Component{
         let viewport = this.getViewport()
         if (!this.props.data){
             viewport.setGeometryEntity(null)
-        } else if (true || FluxViewport.isKnownGeom(this.props.data.value)) {
+        } else if (FluxViewport.isKnownGeom(this.props.data.value)) {
             //add it to the viewport
-            viewport.setGeometryJson( JSON.stringify(this.props.data.value) )
+            viewport.setGeometryEntity(this.props.data.value)
+        } else if ( FluxViewport.isKnownGeom(houseMapper(this.props.data.value[0])) ) {
+            //if it's a house, map out the usuable geometry data and add all parts to the viewport
+            viewport.setGeometryEntity(this.props.data.value.map(houseMapper))
         } else (
             console.error('Data does not represent a known geometric object')
         )
@@ -47,7 +55,7 @@ class View extends Component{
                 ref={(view) => {this.view = view}}
                 style={{
                     height: "100%",
-                    visibility: this.props.isLoggedIn? "visible" : "visible",
+                    visibility: this.props.isLoggedIn? "visible" : "hidden",
                 }}
             >
             </div>

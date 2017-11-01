@@ -2,22 +2,22 @@ import React, { Component } from 'react'
 
 import Button from "material-ui/FlatButton"
 
+const loginStyle = {marginLeft: "auto"}
+
 class Login extends Component {
 
     render() {
         if (this.props.isLoggedIn === null){
             //null means that login status is not known yet
-            return (
-                <Button style={{visibility: 'hidden'}} label="Log Out"/>
-            )
+            return null;
         }
         else if (this.props.isLoggedIn){
             return (
-                <Button label="Log Out" onClick={this.props.logOut}/>
+                <Button style={loginStyle} label="Log Out" onClick={this.props.logOut}/>
             )
         } else {
             return (
-                <Button label="Log In" onClick={this.props.loginRedirect}/>
+                <Button style={loginStyle} label="Log In" onClick={this.props.loginRedirect}/>
             )
         }
     }

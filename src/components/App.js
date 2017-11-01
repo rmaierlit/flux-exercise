@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 import injectTapEventPlugin from 'react-tap-event-plugin'
-import { Card, CardHeader, CardMedia } from 'material-ui/Card';
+import { Card, CardHeader, CardMedia} from 'material-ui/Card';
 
 import Login from './Login.js'
 import View from './View.js'
@@ -100,11 +100,13 @@ class App extends Component {
   }
 
   handleProjectChange = (event, index, project_id) => {
-    this.setState({selectedProject: project_id})
+    this.setState({selectedProject: project_id, selectedOutputCell: 0, projectCells: []})
 
     if(project_id) {
       let project = this.state.projects.filter( (p) => p.id === project_id )[0]
       this.fetchCells(project)
+    } else {
+      console.log(project_id)
     }
   }
 
@@ -135,13 +137,13 @@ class App extends Component {
           style={{height: "100vh", display: "flex", justifyContent:"center", alignItems:"center"}}
         >
           <Card
-            style={{width: "60%", height: "80%"}}
+            style={{width: "80%", height: "80%"}}
             containerStyle={{height: "100%"}}
           >
             <CardHeader
               title="FLUX"
               subtitle="SEED PROJECT"
-              style={{display: "flex", justifyContent: "space-between"}}
+              style={{display: "flex"}}
               children={[
                 (<ControlledSelector
                   default="Select a Project"
@@ -152,6 +154,14 @@ class App extends Component {
                   value={this.state.selectedProject}
                   key={0}
                 />),
+                (<ControlledSelector
+                  default="Select a Cell"
+                  visible={this.state.isLoggedIn && this.state.projectCells.length}
+                  handleChange={this.handleCellChange}
+                  options={this.state.projectCells}
+                  convert={optionConverters.cellToItem}
+                  value={this.state.selectedOutputCell}
+                />),
                 (<Login
                   isLoggedIn={this.state.isLoggedIn}
                   loginRedirect={redirectToFluxLogin}
@@ -161,7 +171,7 @@ class App extends Component {
               ]}
             />
             <CardMedia
-              style={{height: "60%", padding: "10px"}}
+              style={{height: "70%", padding: "10px"}}
               mediaStyle={{height: "100%"}}
             >
               <View
@@ -169,14 +179,6 @@ class App extends Component {
                 data={this.state.data}
               />
             </CardMedia>
-            <ControlledSelector
-              default="Select a Cell"
-              visible={this.state.isLoggedIn && this.state.projectCells.length}
-              handleChange={this.handleCellChange}
-              options={this.state.projectCells}
-              convert={optionConverters.cellToItem}
-              value={this.state.selectedOutputCell}
-            />
           </Card>
         </div>
       </MuiThemeProvider>
