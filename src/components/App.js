@@ -142,7 +142,7 @@ class App extends Component {
           >
             <CardHeader
               title="FLUX"
-              subtitle="SEED PROJECT"
+              subtitle="INTERVIEW EXERCISE"
               style={{display: "flex"}}
               children={[
                 (<ControlledSelector
