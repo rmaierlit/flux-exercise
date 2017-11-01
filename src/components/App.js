@@ -138,7 +138,7 @@ class App extends Component {
         >
           <Card
             style={{width: "80%", height: "80%"}}
-            containerStyle={{height: "100%"}}
+            containerStyle={{height: "100%", display: "flex", flexDirection: "column", justifyContent: "stretch"}}
           >
             <CardHeader
               title="FLUX"
@@ -152,7 +152,7 @@ class App extends Component {
                   options={this.state.projects}
                   convert={optionConverters.projectToItem}
                   value={this.state.selectedProject}
-                  key={0}
+                  key="projectSelector"
                 />),
                 (<ControlledSelector
                   default="Select a Cell"
@@ -161,18 +161,19 @@ class App extends Component {
                   options={this.state.projectCells}
                   convert={optionConverters.cellToItem}
                   value={this.state.selectedOutputCell}
+                  key="cellSelector"
                 />),
                 (<Login
                   isLoggedIn={this.state.isLoggedIn}
                   loginRedirect={redirectToFluxLogin}
                   logOut={this.logOut}
-                  key={1}
+                  key="Login"
                 />),
               ]}
             />
             <CardMedia
-              style={{height: "70%", padding: "10px"}}
-              mediaStyle={{height: "100%"}}
+              style={{flex: "auto", margin: "12px"}}
+              mediaStyle={{position: "absolute", top: 0, bottom: 0, left: 0, right: 0}}
             >
               <View
                 isLoggedIn={this.state.isLoggedIn}
