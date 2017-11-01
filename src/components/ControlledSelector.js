@@ -16,21 +16,23 @@ class ControlledSelector extends Component {
 
         items.unshift(
             <MenuItem
-                value={-1}
+                value={0}
                 primaryText={this.props.default}
-                key={-1}
+                key={0}
             />
         )
-
-        return (
-            <SelectField
-                style={{visibility: this.props.visible? 'visible' : 'hidden' }}
-                value={this.props.value}
-                onChange={this.props.handleChange}
-            >
-                {items}
-            </SelectField>
-        )
+        if (this.props.visible) {
+            return (
+                <SelectField
+                    value={this.props.value}
+                    onChange={this.props.handleChange}
+                >
+                    {items}
+                </SelectField>
+            )
+        } else {
+            return null;
+        }
     }
 }
 
