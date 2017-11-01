@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import Button from "material-ui/RaisedButton"
+import Button from "material-ui/FlatButton"
 
 class Login extends Component {
 
@@ -12,12 +12,12 @@ class Login extends Component {
         else if (this.props.isLoggedIn){
             return (
                 <div>
-                    <Button onClick={this.props.logOut}>Log Out</Button>
+                    <Button label="Log Out" onClick={this.props.logOut}/>
                 </div>
             )
         } else {
             return (
-                <Button onClick={this.props.loginRedirect}>Log In</Button>
+                <Button label="Log In" onClick={this.props.loginRedirect}/>
             )
         }
     }
